@@ -15,7 +15,7 @@ Nowadays, computing is pervasive throughout the entire world:
 
 The expandsion of IoT is one of the new technology revolutions, also including the field of robotics, automotive, AI,... with many areas of research and numerous new industrial products.
 
-![Image](./images/1.1.png)
+![](./images/1.1.png)
 
 However, the majority of this technology is hidden from the average human user. Typically, large servers will have thousands of processing units in form of microprocessors together with huge amounts of memory and specific accelerators (GPUs, FPGAs,...).
 
@@ -33,7 +33,7 @@ Connection between these elements:
 
 Other mandatory functions and signals are also requires such as __clock__ to synchonize data transfers, a __reset__ to initialize the system, __power supply__ lines, __interrupt__ lines.
 
-![Image](./images/1.2.png)
+![](./images/1.2.png)
 
 The processor provides an address to select a device and indicates a memory position or programmable interface internal register.
 
@@ -60,7 +60,7 @@ However, the hardware alone is not enough. On top of it, we must have a software
 
 Above low-level software may sit libraries of useful functions, such as GUIs, network protocols, singal processing,...
 
-![Image](./images/1.3.png)
+![](./images/1.3.png)
 
 ## 1.4. Embedded SoC Architectures
 
@@ -91,17 +91,17 @@ Main selection criteria:
 - Size of data/address bus (4, 8, 16,... bits of data path)
 - Number of units inside a processor
 
-![Image](./images/1.4.png)
+![](./images/1.4.png)
 
 ### 1.5.2. Registers and Control Unit
 
 Register are used as sources and destinations for data to save and execute the operations. These could be simple and unique but as in some cases, many banks of register might exist.
 
-![Image](./images/RISC-V-registers.png)
+![](./images/RISC-V-registers.png)
 
 Some processors may have particular register called __flags__, which holds status of operations from the ALU.
 
-![Image](./images/8086-flags.gif)
+![](./images/8086-flags.gif)
 
 Example of 8086 (and almost all processors)'s flags register:
 - __Carry flag__ (C) indicate when an arithmetic carry or borrow has been generated out of the most significant arithmetic logic unit (ALU) bit position.
@@ -121,15 +121,15 @@ The data retrieved from the memory is passed to the __Instruction Register__ to 
 
 In term or a simple processor, every step of an instruction is completed before a new one is started. However, this is not very efficient.
 
-![Image](./images/1.7.png)
+![](./images/1.7.png)
 
 A better approach is __pipelining__ the design, as soon as an instruction has been fetched into the internal instruction register, a new instruction can be fetched while the first one is being decoded, and so on...
 
-![Image](./images/1.8.png)
+![](./images/1.8.png)
 
 However, this kind of parallelism does have some problems for like, if a program branch or jump instruction has to be executed, the address of the next instruction will only known when the execution of the previous one has completed. So in this case, the next fetch must be delayed.
 
-![Image](./images/1.9.png)
+![](./images/1.9.png)
 
 To transfer data __in__ and __out__ of the processor, 2 specific buffers access the external data bus. Sometimes a bidirectional buffer is used, with a tri-state buffer allowing the direction of transfer to be differentiated.
 
@@ -139,7 +139,108 @@ The data to transfer can be vary:
 - Access to a programmable interface
 - etc, any thing that can provide or receive data...
 
-Von Neumann archtitecture uses a unified memory space, holding both instructions & data. The same bus is shared for reading instruction and accessing data. Using common bus like that reduces physical lines, allows shared bus to be wide, but instructions & data must be transfers in a sequence, creating a bottleneck and reducing thoughput.
+__Von Neumann__ archtitecture uses a __unified memory space__, holding both instructions & data. The __same bus is shared__ for reading instruction and accessing data. Using common bus like that __reduces physical lines__, __allows shared bus to be wide__, but __instructions & data must be transfers in a sequence__, creating a bottleneck and __reducing thoughput__.
 
-![Image](./images/Von-Neumann.png)
+![](./images/Von-Neumann.png)
 
+__Harvard architecture__ is an alternative architecture, more powerful in terms of __compute efficiency__. __Seperated address & data buses__, which make the bus doubled up and has a __cost in terms of complexity and physical lines__. However, it allows the reading of a new instruction to be done __at the same time__ as a data transfer.
+
+![](./images/Harvard.png)
+
+### 1.5.3. Memory
+
+Memory can be viewed as a large number of seperated drawers, each with its own identification number, starting from 0 and increasing thereafter. The next step is to create __memory map__, a model of the memories available on a system. Regardless of whether the memory is internal or external to the microcontroller, the memory map model will be the same.
+
+![](./images/memory.png)
+
+To design a SoC must determine:
+- Address space available (range of memory address that can be accessed).
+- Data bus width
+- Type of memory:
+  - Volatile/Non-volatile
+  - Static/Dynamic
+  - Asynchronous/Synchronous
+- Control singal needed
+- ...
+
+Memory mapping process:
+- When Power Up or after a Reset, start executing code from boot(strap) code section, which needs to be immediately available.
+- Need a few megabytes of static memory (SRAM) that can be read from and written to.
+- ...
+
+### 1.5.4. Memory Classes
+
+When memory is needed, there are many different models to choose from
+
+#### 1.5.4.1. Nonvolatile/volatile memory
+
+##### a) Nonvolatile memory
+
+When power goes down, the content of the memory is not lost and is available again at power up. This is mandatory for boot code used when a processor starts or restarts.
+
+###### ROM:
+Read-only memory; the content of this memory is defined during the manufacturing of the device. In the case of error, the chip is effectively rendered unusable.
+
+###### PROM:
+Programmable ROM; the content can be programmed with a specific piece of hardware called a memory programmer. The content can only be programmed once.
+
+###### EPROM (Erasable PROM):
+like a PROM, could be programmed through specific programmer hardware, but a quartz window was installed on the top of the device and it was also possible to erase the memory via UV light, although it was necessary to remove the device from its board for erasure and reprogramming.
+
+###### EEPROM (Electrically erasable PROM):
+Advance on EPROM, one could now program the memory directly on the board and rewrite its content by electrical erasure byte by byte. Low density and expensive, but still used today inside some microcontrollers for memory of limited size.
+
+###### Flash Memory:
+EEPROM-based, NAND-type flash memory can be erased in blocks (the NOR-type works at word-level) and rewritten in situ using an appropriate protocol and a standard voltage. Commonly available in sizes of many gigabytes, it is routinely used in USB memory sticks and SD cards for cameras, and can be used by almost all microcontrollers.
+
+###### FRAM, MRAM, PRAM, ReRAM, FeFET
+
+##### b) Volatile memory
+
+When power goes down, the content of volatile memory is lost. It can be static or dynamic. If the latter, it is necessary to periodically refresh the memory content.
+
+###### SRAM (Static RAM):
+This is the basic form of volatile RAM, available up to a few megabytes. Four transistors are needed to memorize a bit of information, plus two more to access the content during read or write access.
+
+##### SSRAM (Synchronous SRAM):
+Access is synchronized via a clock.
+
+##### DRAM (Dynamic RAM):
+The main idea behind DRAM is to make use of a memory element based on a single transistor to memorize and access a bit of information. The performance gain is huge (approximately fourfold compared to SRAM) but it is necessary to refresh the full memory every few milliseconds! Access is conducted in two steps: selection of a row of bits and then of the column in the selected row. The data is arranged in a matrix-like format.
+
+###### SDRAM (Synchronous DRAM):
+Uses the same principle as DRAM but with clock-controlled synchronous access.
+
+###### DDR SDRAM (Dual data rate SDRAM), GDDR (SDRAM) (Graphical DDR), LPDDR (Low-power DDR), QDR (SDRAM) (Quad data rate)
+
+Volatile memory can be further classified according to whether data access is synchronous or asynchronous:
+- Asynchronous: No clock is used. The RAM family has some devices without a clock; they conduct asynchronous access.
+- Synchronous: Memory access is clock-based; more recent RAM solutions use a clock to synchronize data transfers.
+
+Data access to transfer addresses and data can be done in parallel or in serial:
+- Parallel data access: In a parallel bus, all of the address and data lines are available, which enables the processor to execute code and access data directly with a very fast transfer rate between memory and the processor; less than ten nanoseconds for transfer of an entire (multi-bit) word. Note that some devices multiplex these lines.
+- Serial data access: When the number of lines used to transfer addresses and data must be limited, serial access to memory (one bit at a time) is a sensible option. Memories used on SD cards and USB sticks use this approach. Information transfer is done with a serial bus in the form of SPI (Serial Peripheral Interface) or a QSPI (Queued SPI) controller. Alternative protocols include USB (fast) and I2C (low-speed protocol for multiple peripherals).
+
+Addressing can also be approached in two different ways:
+- Parallel addressing for direct access: To access a memory position the full address is transferred in parallel (to cover many bits of the address). Sometimes the address is provided in two steps as for DRAM (see above): first to specify the row address, then the column address.
+- Streaming access: The first address accessed in memory is transferred, after which the address is automatically incremented, and the data is transferred to/from the next contiguous address, and so on.
+
+![](./images/memory-types.png)
+
+### 1.5.5. Internal Memory Organization
+
+![](./images/SRAM.png)
+
+The memory cell is represented by two inverters. Two transistors are used as a gate to transfer the data bit from two vertical lines, D and D'
+
+### 1.5.6. Interrupt Controllers
+
+### 1.5.7. Memory Protection Unit (MPU)/Memory Management Unit (MMU)
+
+### 1.5.8. Interconnects
+
+## 1.6. System Architecture and Complexity
+
+## 1.7. Software for Embedded System Development
+
+## 1.8. Summary
