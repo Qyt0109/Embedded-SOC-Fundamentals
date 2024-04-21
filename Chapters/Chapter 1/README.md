@@ -1,4 +1,4 @@
-# Chapter 1. A Memory-centric System Model
+# S. A Memory-centric System Model
 
 Chapter 1 introduces embedded systems from a high-level hardware and software perspective. We cover basic systems built on microcontroller-based architectures before moving to SoC-based designs.
 
